@@ -1,0 +1,413 @@
+/* Import DM Sans from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Ensure body uses DM Sans font by default */
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  :root {
+    /* Primary color variables */
+    --color-primary: #3b82f6;
+    --color-primary-rgb: 59, 130, 246;
+    --color-primary-hover: #2563eb;
+    --color-primary-light: #93c5fd;
+    --color-primary-dark: #1d4ed8;
+    
+    /* Accent color variables */
+    --color-accent: #10b981;
+    --color-accent-rgb: 16, 185, 129;
+    --color-accent-hover: #059669;
+    --color-accent-light: #a7f3d0;
+    --color-accent-dark: #047857;
+
+    /* Landing page dynamic colors */
+    --primary-color: #f4a261;
+    --accent-color: #e76f51;
+  }
+}
+
+/* CSS utilities that use the variables */
+@layer components {
+  /* Font class for consistent typography across the app */
+  .font-app {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+  
+  /* Font weight utility classes */
+  .font-app-regular {
+    font-weight: 400;
+  }
+  
+  .font-app-medium {
+    font-weight: 500;
+  }
+  
+  .font-app-bold {
+    font-weight: 700;
+  }
+  
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+  
+  .bg-primary-light {
+    background-color: var(--color-primary-light);
+  }
+  
+  .bg-primary-dark {
+    background-color: var(--color-primary-dark);
+  }
+  
+  .bg-accent {
+    background-color: var(--color-accent);
+  }
+  
+  .bg-accent-light {
+    background-color: var(--color-accent-light);
+  }
+  
+  .bg-accent-dark {
+    background-color: var(--color-accent-dark);
+  }
+  
+  .text-primary {
+    color: var(--color-primary);
+  }
+  
+  .text-accent {
+    color: var(--color-accent);
+  }
+  
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+  
+  .border-accent {
+    border-color: var(--color-accent);
+  }
+  
+  .hover\:bg-primary-hover:hover {
+    background-color: var(--color-primary-hover);
+  }
+  
+  .hover\:bg-accent-hover:hover {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Contract content styles */
+.contract-content h1,
+.contract-content h2,
+.contract-content h3,
+.contract-content h4,
+.contract-content h5,
+.contract-content h6 {
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #1F2937;
+}
+
+.contract-content h1 { font-size: 1.8em; }
+.contract-content h2 { font-size: 1.6em; }
+.contract-content h3 { font-size: 1.4em; }
+.contract-content h4 { font-size: 1.2em; }
+.contract-content h5 { font-size: 1.1em; }
+.contract-content h6 { font-size: 1em; }
+
+.contract-content p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.contract-content ul, 
+.contract-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.contract-content li {
+  margin-bottom: 0.5em;
+}
+
+.contract-content strong, 
+.contract-content b {
+  font-weight: bold;
+}
+
+.contract-content em, 
+.contract-content i {
+  font-style: italic;
+}
+
+.contract-content a {
+  color: #ee1d3c;
+  text-decoration: underline;
+}
+
+.contract-content hr {
+  margin: 1.5em 0;
+  border: 0;
+  border-top: 1px solid #E5E7EB;
+}
+
+.contract-content blockquote {
+  border-left: 4px solid #9CA3AF;
+  padding-left: 1em;
+  margin-left: 0;
+  color: #4B5563;
+  font-style: italic;
+}
+
+.contract-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+.contract-content th,
+.contract-content td {
+  border: 1px solid #E5E7EB;
+  padding: 0.5em;
+  text-align: left;
+}
+
+.contract-content th {
+  background-color: #F3F4F6;
+  font-weight: bold;
+}
+
+/* Landing Page Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+/* Landing Page Hover Effects */
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.button-hover {
+  transition: all 0.3s ease;
+}
+
+.button-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Stagger Animation */
+.stagger-animate > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.stagger-animate > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animate > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animate > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animate > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animate > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-animate > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Navigation Link Hover Effect */
+.nav-link {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-link .h-0\.5 {
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+/* Dynamic color classes for landing page */
+.text-primary-dynamic {
+  color: var(--primary-color);
+}
+
+.text-accent-dynamic {
+  color: var(--accent-color);
+}
+
+.bg-primary-dynamic {
+  background-color: var(--primary-color);
+}
+
+.bg-accent-dynamic {
+  background-color: var(--accent-color);
+}
+
+.border-primary-dynamic {
+  border-color: var(--primary-color);
+}
+
+.border-accent-dynamic {
+  border-color: var(--accent-color);
+}
+
+.bg-gradient-primary-accent {
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+.bg-gradient-accent-primary {
+  background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+}
+
+/* Testimonials Swiper Styles */
+.testimonials-swiper .swiper-pagination {
+  bottom: -60px !important;
+  position: relative !important;
+}
+
+.testimonials-swiper .swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background: #d1d5db !important;
+  opacity: 1 !important;
+  margin: 0 6px !important;
+  transition: all 0.3s ease !important;
+}
+
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: var(--primary-color) !important;
+  transform: scale(1.2) !important;
+}
+
+/* Text clamp utility for testimonials */
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Equal height for all testimonial slides */
+.testimonials-swiper .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.testimonials-swiper .swiper-slide > div {
+  width: 100%;
+}

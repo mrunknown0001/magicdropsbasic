@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bewerbung eingegangen</title>
+  <style>
+    /* Reset styles */
+    body, p, h1, h2, h3, h4, h5, h6, ul, ol, li {
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      color: #222222;
+      background-color: #F5F6FA;
+    }
+
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Logo */
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #c1121f;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* Card */
+    .card {
+      background-color: #FFFFFF;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #222222;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #666666;
+      margin-bottom: 24px;
+    }
+
+    /* Application Details */
+    .details {
+      background-color: #F5F6FA;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .details p {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .details strong {
+      color: #222222;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #666666;
+    }
+
+    .footer p {
+      margin-bottom: 8px;
+    }
+
+    .social-links {
+      margin-bottom: 24px;
+    }
+
+    .social-links a {
+      color: #c1121f;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      {{#if companyData.logoUrl}}
+        <img src="{{companyData.logoUrl}}" alt="{{companyData.websiteName}}" style="max-height: 60px; max-width: 200px; height: auto; width: auto;">
+      {{else}}
+        {{companyData.websiteName}}
+      {{/if}}
+    </div>
+
+    <div class="card">
+      <h1>Bewerbung erfolgreich!</h1>
+      <p>Sehr geehrte/r {{application.first_name}} {{application.last_name}},</p>
+      
+      <p>wir freuen uns, Ihnen mitteilen zu dürfen, dass Ihre Bewerbung erfolgreich war!<br>
+      Unsere Personalabteilung hat Ihre Unterlagen geprüft und Sie für die Mitarbeit in unserem Team ausgewählt.</p>
+
+      <div style="background-color: #f8f9fa; border-left: 4px solid #c1121f; padding: 20px; margin: 24px 0; border-radius: 4px;">
+        <p style="margin-bottom: 16px; font-weight: bold; color: #222222;">Was Sie jetzt tun müssen:</p>
+        <p style="margin-bottom: 16px;">Bitte erstellen Sie jetzt Ihr persönliches Mitarbeiterkonto und unterzeichnen Sie Ihren Arbeitsvertrag online über den folgenden Link:</p>
+        <p style="text-align: center; margin-bottom: 0;">
+          <a href="{{companyData.websiteUrl}}/register" style="display: inline-block; background-color: #c1121f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            👉 Jetzt registrieren
+          </a>
+        </p>
+      </div>
+
+      <div style="background-color: #f0f9ff; border: 1px solid #e0f2fe; padding: 20px; margin: 24px 0; border-radius: 8px;">
+        <p style="margin-bottom: 16px; font-weight: bold; color: #222222;">Was Sie erwartet:</p>
+        <p style="margin-bottom: 16px;">Sie unterstützen uns flexibel in den Bereichen KYC-Verifizierung und App-Testing – beides leicht zu erlernen, mit attraktiver Bezahlung und Provisionsmöglichkeiten.</p>
+        <p style="margin-bottom: 0;">Die Arbeit ist ortsunabhängig, 100 % flexibel und ideal geeignet für Studierende, Berufstätige oder alle, die sich nebenbei etwas dazuverdienen möchten.</p>
+      </div>
+
+      <p>Bei Fragen stehen wir Ihnen jederzeit zur Verfügung. Wir freuen uns auf die Zusammenarbeit!</p>
+      
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+        <p style="margin-bottom: 8px; font-weight: bold; color: #222222;">Mit freundlichen Grüßen</p>
+        <p style="margin-bottom: 4px;">Ihr {{companyData.websiteName}}-Team</p>
+        <p style="margin-bottom: 0; color: #666666;">{{companyData.companyName}}</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© {{currentYear}} {{companyData.companyName}}. Alle Rechte vorbehalten.</p>
+      <p>{{companyData.address.street}}, {{companyData.address.zipCode}} {{companyData.address.city}}</p>
+      <p>
+        E-Mail: <a href="mailto:{{companyData.contact.email}}" style="color: #c1121f;">{{companyData.contact.email}}</a> | 
+        Telefon: {{companyData.contact.phone}}
+      </p>
+    </div>
+  </div>
+</body>
+</html>

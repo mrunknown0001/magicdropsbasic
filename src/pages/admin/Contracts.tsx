@@ -1,0 +1,367 @@
+import React, { useState } from 'react';
+import Card, { CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import AnimatedButton from '../../components/ui/AnimatedButton';
+import Button from '../../components/ui/Button';
+import ShimmerEffect from '../../components/ui/ShimmerEffect';
+import { FiSearch, FiMoreHorizontal, FiFileText, FiPlus, FiDownload, FiEye, FiEdit, FiTrash2, FiCopy, FiRefreshCw } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { useContractsStats } from '../../hooks/useContractsStats';
+import ViewContractModal from '../../components/admin/ViewContractModal';
+import { Contract } from '../../types/database';
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useSettingsContext } from '../../context/SettingsContext';
+
+const Contracts: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { colors } = useSettingsContext();
+  
+  // Use the new hook
+  const {
+    contracts,
+    loading,
+    error,
+    fetchContracts,
+    createContract,
+    updateContract,
+    deleteContract
+  } = useContractsStats();
+
+  // Filtered contracts based on search and category
+  const filteredContracts = contracts.filter((contract: Contract) => {
+    // Make sure all required properties exist to prevent errors
+    if (!contract || !contract.title || !contract.category || !contract.id) {
+      return false;
+    }
+    
+    const matchesSearch = 
+      contract.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contract.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contract.id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = !filterCategory || contract.category === filterCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+  
+  // Extract all unique categories for filtering
+  const categories = [...new Set(contracts.map((contract: Contract) => contract.category))].sort();
+  
+  // Handle manual refresh
+  const handleRefresh = () => {
+    fetchContracts(true); // Force refresh
+    showToast({
+      type: 'info',
+      title: 'Verträge werden neu geladen',
+      message: 'Bitte warten Sie einen Moment...'
+    });
+  };
+
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  // Handler for closing the edit modal (no longer needed)
+  const handleCloseEditModal = () => {
+    // This function is no longer needed, but keeping it with minimal logic
+    // to avoid having to update all references
+    fetchContracts(true);
+  };
+
+  // Handler for editing a contract template
+  const handleEditContract = async (id: string, contractData: Partial<Contract>) => {
+    try {
+      setIsSubmitting(true);
+      await updateContract(id, contractData);
+      
+      showToast({
+        title: 'Erfolg',
+        message: 'Vertragsvorlage wurde erfolgreich aktualisiert.',
+        type: 'success'
+      });
+    } catch (error) {
+      showToast({
+        title: 'Fehler',
+        message: 'Die Vertragsvorlage konnte nicht aktualisiert werden.',
+        type: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handler for deleting a contract template
+  const handleDeleteContract = async (id: string) => {
+    if (window.confirm('Sind Sie sicher, dass Sie diese Vertragsvorlage löschen möchten?')) {
+      try {
+        await deleteContract(id);
+        showToast({
+          title: 'Erfolg',
+          message: 'Vertragsvorlage wurde erfolgreich gelöscht.',
+          type: 'success'
+        });
+      } catch (error) {
+        showToast({
+          title: 'Fehler',
+          message: 'Die Vertragsvorlage konnte nicht gelöscht werden.',
+          type: 'error'
+        });
+      }
+    }
+  };
+
+  // Handler for duplicating a contract template
+  const handleDuplicateContract = async (contract: Contract) => {
+    try {
+      setIsSubmitting(true);
+      
+      // Create a copy of the contract with a new title
+      const newContract = {
+        ...contract,
+        title: `${contract.title} (Kopie)`,
+        is_template: true,
+        created_by: contract.created_by  // Keep the original creator's ID
+      };
+      
+      // Remove the id and timestamps as they will be generated by the server
+      delete newContract.id;
+      delete newContract.created_at;
+      delete newContract.updated_at;
+      
+      await createContract(newContract);
+      
+      showToast({
+        title: 'Erfolg',
+        message: 'Vertragsvorlage wurde erfolgreich dupliziert.',
+        type: 'success'
+      });
+    } catch (error) {
+      showToast({
+        title: 'Fehler',
+        message: 'Die Vertragsvorlage konnte nicht dupliziert werden.',
+        type: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
+
+  return (
+    <div className="w-full px-4 py-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6"
+      >
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div className="flex items-center">
+            <FiFileText size={24} className="text-gray-900 dark:text-white mr-4" />
+            <div>
+              <h1 className="text-2xl font-app font-app-bold text-gray-900 dark:text-white flex items-center">
+                Vertragsvorlagen
+                {loading && (
+                  <span className="ml-3 inline-block">
+                    <div className="animate-spin h-4 w-4 border-2 border-indigo-500 dark:border-white border-t-transparent dark:border-t-transparent rounded-full"></div>
+                  </span>
+                )}
+              </h1>
+              <p className="mt-1 text-gray-600 dark:text-gray-400 font-app">
+                Verwalten Sie Ihre Vertragsvorlagen für Kunden und Mitarbeiter
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 md:mt-0 flex items-center space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={loading}
+              leftIcon={<FiRefreshCw size={16} />}
+            >
+              Aktualisieren
+            </Button>
+            <Button
+              size="md"
+              onClick={() => navigate('/admin/contracts/create')}
+              leftIcon={<FiPlus size={16} />}
+              style={{ backgroundColor: colors.primary, color: 'white' }}
+              className="hover:opacity-90 transition-opacity"
+            >
+              Neue Vorlage
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
+      {loading ? (
+        <Card>
+          <CardContent className="py-10">
+            <div className="space-y-4">
+              <ShimmerEffect className="h-8 w-full max-w-md" />
+              <ShimmerEffect className="h-64 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      ) : error ? (
+        <Card>
+          <CardContent className="py-10">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                Fehler beim Laden der Verträge
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
+                Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.
+              </p>
+              <AnimatedButton
+                onClick={handleRefresh}
+                variant="secondary"
+                icon={<FiRefreshCw size={16} />}
+              >
+                Erneut versuchen
+              </AnimatedButton>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <motion.div 
+          className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="p-4">
+            {contracts.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                  <FiFileText size={24} className="text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Keine Vertragsvorlagen gefunden</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                  Erstellen Sie eine neue Vertragsvorlage, um loszulegen.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {contracts.map((contract: Contract) => (
+                  <motion.div 
+                    key={contract.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                      <div className="flex items-center">
+                        <FiFileText size={18} className="text-gray-500 dark:text-gray-400 mr-2" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{contract.title}</h3>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        contract.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      }`}>
+                        {contract.is_active ? 'Aktiv' : 'Inaktiv'}
+                      </span>
+                    </div>
+                    
+                    <div className="p-4">
+                      <div className="grid grid-cols-2 gap-3 mt-1">
+                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-2">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Kategorie</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{contract.category}</div>
+                        </div>
+                        
+                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-2">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Version</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{contract.version || 'Standard'} (v{contract.version_number || 1})</div>
+                        </div>
+                        
+                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-2 col-span-2">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Zuletzt bearbeitet</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {contract.updated_at ? formatDistanceToNow(new Date(contract.updated_at), { addSuffix: true, locale: de }) : '-'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700 flex justify-end items-center">
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => {
+                            setSelectedContract(contract);
+                            setIsViewModalOpen(true);
+                          }}
+                          className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 flex items-center p-1.5"
+                          title="Ansehen"
+                        >
+                          <FiEye size={20} />
+                        </button>
+                        <button
+                          onClick={() => navigate(`/admin/contracts/${contract.id}/edit`)}
+                          className="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 flex items-center p-1.5"
+                          title="Bearbeiten"
+                        >
+                          <FiEdit size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateContract(contract)}
+                          className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 flex items-center p-1.5"
+                          title="Duplizieren"
+                        >
+                          <FiCopy size={20} />
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteContract(contract.id)}
+                          className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 flex items-center p-1.5"
+                          title="Löschen"
+                        >
+                          <FiTrash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {selectedContract && (
+        <ViewContractModal
+          isOpen={isViewModalOpen}
+          onClose={() => setIsViewModalOpen(false)}
+          contract={selectedContract}
+          isAdmin={isAdmin()}
+        />
+      )}
+    </div>
+  );
+};
+
+export default React.memo(Contracts);

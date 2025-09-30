@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tomato-talent-app
+    restart: unless-stopped
+    environment:
+      # Server configuration
+      - PORT=3001
+      - NODE_ENV=production
+      
+      # API Keys (will be overridden by Coolify)
+      - SMS_ACTIVATE_API_KEY=${SMS_ACTIVATE_API_KEY}
+      - SMSPVA_API_KEY=${SMSPVA_API_KEY}
+      - ANOSIM_API_KEY=${ANOSIM_API_KEY}
+      - GOGETSMS_API_KEY=${GOGETSMS_API_KEY}
+      - SERVER_API_KEY=${SERVER_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      
+      # Supabase configuration
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      
+      # Email configuration
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME}
+      
+      # CORS configuration
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    container_name: tomato-talent-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge

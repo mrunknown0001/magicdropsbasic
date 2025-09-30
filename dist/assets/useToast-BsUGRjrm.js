@@ -1,0 +1,1 @@
+import{r as i}from"./index-C2zOcIr5.js";const m=()=>{const[a,o]=i.useState([]),n=t=>{const s=Math.random().toString(36).substring(2,9),e={id:s,title:t.title,message:t.message,type:t.type,duration:t.duration||5e3};return o(u=>[...u,e]),setTimeout(()=>{r(s)},e.duration),s},r=t=>{o(s=>s.filter(e=>e.id!==t))};return{toasts:a,showToast:n,removeToast:r}};export{m as u};
